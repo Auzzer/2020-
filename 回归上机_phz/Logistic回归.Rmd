@@ -1,0 +1,66 @@
+---
+title: "Logitic回归"
+author: "Auzzer_Pang"
+date: "6/7/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+rm (list = ls())
+setwd("/Users/auzzer_pang")
+data = read.csv("Logistic_data.csv")
+data_new = read.csv("Logistic_data_new.csv")
+```
+
+```{r}
+attach(data)
+pi1 = log(pi/(1-pi))
+data1 = cbind.data.frame(x1,x2,pi1)
+detach(data)
+attach(data1)
+lm1 = lm(pi1~x1+x2,data1)
+lm1
+summary(lm1)
+detach(data1)
+
+```
+
+```{r}
+#接下来用加权的方法来解决一方查问题
+attach(data)
+w=ni*pi*(1-pi)#计算权重
+detach(data)
+attach(data1)
+lm2 = lm(pi1~x1+x2, weights = w , data1)
+lm2
+summary(lm2)
+detach(data1)
+
+
+```
+
+
+```{r}
+attach(data_new)
+data2 = cbind.data.frame(x11,x12,x13,x21,x22,x23,pi1)
+detach(data_new)
+lm3 = lm(pi1~x11+x12+x13+x21+x22+x23,weights=w,data2)
+lm3
+summary(lm3)
+# lm4 = glm(pi1~x11+x12+x13+x21+x22+x23,
+#           family = binomial(link = 'logit'),
+#           weights = w, data2)
+
+```
+
+```{r}
+#采用逐步回归法来对模型选择变量
+lm_bac = step(lm3,direction = "backward")
+summary(lm_bac)
+
+```
+

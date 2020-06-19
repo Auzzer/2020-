@@ -1,0 +1,56 @@
+---
+title: "f3"
+author: "Auzzer_Pang"
+date: "6/11/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+setwd("/Users/auzzer_pang")
+data = read.csv("f3.csv")
+data = data[1:16,]
+```
+
+```{r}
+round(cor(data[,2:5]),3)
+
+```
+
+```{r}
+#下面进行聚类分析
+data_scaled = scale(data[,2:5])#标准化数据
+d = dist(data_scaled)#求标准化欧式距离
+round(d,3)#保留三位小数
+```
+
+```{r}
+#采用类平均法
+hc <- hclust(d,"average")
+plot(hc, hang=-1, cex=.8)
+```
+
+```{r}
+library(NbClust)
+#根据题目条件，我们认定分类个数在2到10之间为无法取到2和10
+#采用标准化欧式距离以类平均法进行聚类分析
+nc <- NbClust(data_scaled, distance="euclidean",
+              min.nc=3, max.nc=9, method="average") 
+table(nc$Best.n[1,])#找到最佳的聚类个数为9
+barplot(table(nc$Best.n[1,]),
+xlab="Numer of Clusters", ylab="Number of Criteria")
+#将聚类结果以条形图画出来
+
+```
+
+```{r}
+#最终以图表的形式展示聚类结果
+plot(hc, hang=-1, cex=.8,)
+rect.hclust(hc, k=9)
+```
+
+
+

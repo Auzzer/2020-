@@ -1,0 +1,58 @@
+---
+title: "f2"
+author: "Auzzer_Pang"
+date: "6/11/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+setwd("/Users/auzzer_pang")
+data = read.csv("f2.csv")
+```
+
+```{r}
+#计算相关矩阵
+round(cor(data[,2:8]),3)
+```
+
+```{r}
+PCA=princomp(data[,2:8],cor=T)
+summary(PCA,loadings=T)
+```
+
+```{r}
+scores=PCA$scores
+scores1=as.data.frame(scores[,1])
+company=as.data.frame(data$企业)
+data2=cbind.data.frame(scores1,company)
+data2
+order2=order(data2[,1])
+data2[order2,2]
+```
+
+```{r}
+library(psych)
+b = data[,2:8]
+cor(b) #计算样本数据的相关系数矩阵
+fa <- fa(b, nfactors=2, rotate="none", fm="pa")
+fa
+fa.diagram(fa)
+
+
+```
+
+```{r}
+fa_model2 <- fa(b, nfactors = 2, rotate = "varimax", fm = "ml")
+fa_model2
+fa.diagram(fa_model2)
+```
+
+```{r}
+
+```
+

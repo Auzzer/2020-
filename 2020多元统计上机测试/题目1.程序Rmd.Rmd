@@ -1,0 +1,76 @@
+---
+title: "F1"
+author: "Auzzer_Pang"
+date: "6/11/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#读取数据，并将原始数据命名为data1
+setwd("/Users/auzzer_pang")
+data = read.csv("f1.csv") 
+```
+
+```{r}
+#先对部门进行分析,先是政府(1)然后是私人(2)
+data_1 = data[1:10,]
+data_2 = data[11:20,]
+shapiro.test(data_1[,3])
+shapiro.test(data_2[,3])
+# 再对性别进行检验,先是男性(3)再是女性(4)
+data_3 = cbind.data.frame(data[1:5,],data[11:15,])
+shapiro.test(cbind(data_3[,3],data_3[,6]))
+data_4 = cbind.data.frame(data[6:10,],data[16:20,])
+shapiro.test(cbind(data_4[,3],data_4[,6]))
+#P值均大于显著性水平a=0.05,因此不能拒绝原假设，说明数据在因子A的三个水平下都是来自正态分布的。
+```
+
+```{r}
+#接下来进行方差齐性检验
+x = factor(rep(1:4,each=5))
+y = data[1:20,3]
+bartlett.test(y~x,data=data)
+# 由于P值远远大于显著性水平a=0.05，因此不能拒绝原假设，我们认为不同水平下的数据是等方差的。
+
+
+```
+
+```{r}
+#各组均值
+aggregate(data_1[,3], by=list(bumen = data_1[,1]), FUN=mean)
+aggregate(data_2[,3], by=list(bumen = data_2[,1]), FUN=mean)
+aggregate(data_3[,3], by=list(bumen = data_3[,1]), FUN=mean)
+aggregate(data_4[,3], by=list(bumen = data_4[,1]), FUN=mean)
+
+#各组标准差
+aggregate(data_1[,3], by=list(department = data_1[,1]), FUN=sd)  
+aggregate(data_2[,3], by=list(department = data_2[,1]), FUN=sd) 
+aggregate(data_3[,3], by=list(department = data_3[,1]), FUN=sd) 
+aggregate(data_4[,3], by=list(department = data_4[,1]), FUN=sd) 
+
+```
+
+
+```{r}
+#方差分析,若P值小于0.05，则拒绝原假设，认为有显著影响
+aov_sex = aov(data[,3]~data[,2] , data = data)
+summary(aov_sex)
+aov_department = aov(data[,3]~data[,1] , data = data)
+summary(aov_department)
+```
+
+```{r}
+#交互作用
+aov_intere = aov(data[,3]~data[,1]*data[,2] , data = data)
+summary(aov_intere)
+
+
+```
+
+
+
+

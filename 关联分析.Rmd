@@ -1,0 +1,155 @@
+---
+title: "关联分析"
+author: "Auzzer_Pang"
+date: "6/18/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+rm (list = ls())
+setwd("/Users/auzzer_pang")
+library(arules)
+datafile = read.csv("data.csv",
+                    header = T,fileEncoding = 'GBK') # 读取数据
+
+type<-6;index<-8 #数据离散化的分组个数;TNM分期数据所在列
+typelabel<-c("A","B","C","D","E","F")#数据离散化后的标识前缀
+
+set.seed(1212)  # 固定随机化种子
+cols<-ncol(datafile[, 1:6])  # 取六种证型列数
+rows<-nrow(datafile[, 1:6])  # 行数
+disdata <- matrix(NA, rows, cols + 1)  # 初始化
+for (i in 1:cols) {# 聚类离散化
+  cl <- kmeans(datafile[, i], type, nstart = 20)  # 对单个属性列进行聚类
+  disdata[, i] <- paste(typelabel[i], cl$cluster)}
+
+#数据处理2
+##运用apriori算法
+disdata[, cols + 1] <- datafile[,index]
+disdata[, cols + 1] <- paste("H", disdata[, cols + 1], seq = "")
+
+colnames(disdata)<-c("肝气郁结证型系数","热毒蕴结证型系数",
+                     "冲任失调证型系数","气血两虚证型系数",
+                     "脾胃虚弱证型系数","肝肾阴虚证型系数","TNM分期")
+
+write.csv(disdata,file="processedfile.csv",quote=F,row.names=F)
+a <- read.csv("processedfile.csv", header = TRUE) # 读入数据
+#****************************************************************#
+trans <- as(a,"transactions")  # 将数据转换为transactions格式
+inspect(trans[1:5])  # 观测trans数据集中前5行数据items
+```
+
+```{r}
+# 使用apriori函数生成关联规则
+#生成关联规则
+rules <- apriori(trans,parameter=list(support=0.06,
+                                    confidence=0.75,target="rules"))
+# 使用inspect函数提取规则
+inspect(rules)  # 观测rules中关联规则
+size(x=rules)
+rules.sorted<-sort(x=rules,by="lift",decreasing=TRUE)
+inspect(rules.sorted)
+
+#保存规则1
+write(rules,file='rules1.csv',sep=',',quote=T,row.names=F)
+
+#筛选关联规则
+rules.D1<-subset(x=rules,subset=size(rules)==3)#考虑两个系数
+inspect(rules.D1)
+rules.D2<-subset(x=rules,subset=size(rules)==2)#考虑一个系数
+inspect(rules.D2)
+#保存规则2
+write(rules.D1,file='rules.D1.csv',sep=',',quote=T,row.names=F)
+write(rules.D2,file='rules.D2.csv',sep=',',quote=T,row.names=F)
+```
+
+```{r}
+#病程阶段
+library(Matrix)
+library(arules)
+#数据处理1
+type<-6;index<-7 #数据离散化的分组个数;病程阶段数据所在列
+typelabel<-c("A","B","C","D","E","F")#数据离散化后的标识前缀
+set.seed(1212)  # 固定随机化种子
+cols<-ncol(datafile[, 1:6])  # 取六种证型列数
+rows<-nrow(datafile[, 1:6])  # 行数
+disdata = matrix(NA, rows, cols + 1)  # 初始化
+for (i in 1:cols) {# 聚类离散化
+  cl <- kmeans(datafile[, i], type, nstart = 20)  # 对单个属性列进行聚类
+  disdata[, i] <- paste(typelabel[i], cl$cluster)}
+#数据处理2
+disdata[, cols + 1] <- datafile[,index]
+disdata[, cols + 1] <- paste("S", disdata[, cols + 1], seq = "")
+
+colnames(disdata)<-c("肝气郁结证型系数","热毒蕴结证型系数",
+                     "冲任失调证型系数","气血两虚证型系数",
+                    "脾胃虚弱证型系数","肝肾阴虚证型系数","病程阶段")
+
+write.csv(disdata,file="processedfile2.csv",
+          quote=F,row.names=F)
+a <- read.csv("processedfile2.csv", header = TRUE) # 读入数据
+
+trans <- as(a,"transactions")  # 将数据转换为transactions格式
+inspect(trans[1:5])  # 观测trans数据集中前5行数据items
+##运用apriori算法
+#生成关联规则
+rules <- apriori(trans,
+                 parameter=list(support=0.1,
+                                confidence=0.90,target="rules")) 
+inspect(rules)  # 观测rules中关联规则
+size(x=rules)
+rules.sorted<-sort(x=rules,by="lift",decreasing=TRUE)
+inspect(rules.sorted)
+#保存规则
+write(rules,file='rules_bincheng.csv',sep=',',quote=T,row.names=F)
+ 
+
+
+
+```
+
+
+```{r}
+#转移部位
+#数据处理1
+type = 6;index = 9 #数据离散化的分组个数;转移部位数据所在列
+typelabel=c("A","B","C","D","E","F")#数据离散化后的标识前缀
+set.seed(1212)  # 固定随机化种子
+cols<-ncol(datafile[, 1:6])  # 取六种证型列数
+rows<-nrow(datafile[, 1:6])  # 行数
+disdata <- matrix(NA, rows, cols + 1)  # 初始化
+for (i in 1:cols) {# 聚类离散化
+  cl = kmeans(datafile[, i], type, nstart = 20)#对单个属性列进行聚类
+  disdata[, i] = paste(typelabel[i], cl$cluster)}
+
+#数据处理2
+diadata=as.data.frame(disdata)
+diadata[, cols + 1] <- datafile[,index]
+colnames(diadata)<-c("肝气郁结证型系数","热毒蕴结证型系数",
+                     "冲任失调证型系数","气血两虚证型系数",
+                     "脾胃虚弱证型系数","肝肾阴虚证型系数",
+                    "转移部位")
+write.csv(diadata,
+          file="processedfile3.csv",quote=F,row.names=F)
+a = read.csv("processedfile3.csv", header = TRUE) # 读入数据
+trans = as(a,"transactions")  # 将数据转换为transactions格式
+inspect(trans[1:5])  # 观测trans数据集中前5行数据items
+
+
+##运用apriori算法
+
+#生成关联规则
+rules <- apriori(trans,
+                 parameter=list(support=0.15,
+                                confidence=0.7,target="rules")) 
+size(x=rules)
+rules.sorted<-sort(x=rules,by="lift",decreasing=TRUE)
+inspect(rules.sorted)
+#保存规则
+write(rules,file='rules_zhuanyi.csv',sep=',',quote=T,row.names=F)
+
+```

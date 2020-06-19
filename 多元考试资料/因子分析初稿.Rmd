@@ -1,0 +1,91 @@
+---
+title: "因子分析"
+author: "Auzzer"
+date: "2020/5/28"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+rm(list = ls ())
+#读取数据
+setwd("/Users/auzzer_pang")
+data = read.table("因子分析数据.txt")
+#为数据重命名
+names(data) = c("销售增长","销售利润","新客户销售额","测量创造力","机械推理","抽象推理","数学能力")
+```
+
+```{r}
+cor(data)#计算样本的数据的相关系数矩阵
+x = scale(data)#标准化变量
+#极大似然法做因子分析
+factanal(x,factors=2,rotation="none") #m=2极大似然法做因子分析
+factanal(x,factors=3,rotation="none") #m=3极大似然法做因子分析
+```
+
+
+```{r}
+# m =2
+```
+
+```{r}
+#下面用主成分法做因子分析,采用了《多元统计分析及R语言建模》（王斌会编著，暨南大学出版社，2011年）
+library(mvstats) #加载mvstats包
+fac_2=factpc(x,2) #主成分法做因子分析
+fac_2
+fac1=factpc(x,2,rotation="varimax")  #用主成分法采用方差最大化作因子正交旋转
+fac1
+fac2=factpc(x,2,rotation="varimax",scores="regression")  #利用回归估计计算因子得分
+fac2$scores #输出因子得分情况
+plot(fac2$loadings,xlab="Factor1",ylab="Factor2")  #输出因子载荷图
+biplot(fac2$scores,fac2$loadings)  #画出各个学生的因子得分图和原坐标在因子的方向，全面反映了因子与原始数据的关系
+```
+
+
+```{r}
+#下面采用psych包中的fa函数和principal函数做因子分析,需要先安装psych包和GPArotation包
+library(psych) #加载psych包
+fa(x,nfactors=2,fm="ml",rotate="none") #利用psych包中的fa函数利用极大似然法做因子分析
+fac3=principal(x,2,rotate="none") #利用psych包中的principal函数利用主成分法做因子分析
+fac3
+library(GPArotation) #加载GPArotation包
+fac4=principal(x,2,rotate="varimax") #用主成分法采用方差最大化作因子正交旋转
+fac4
+fac4$scores #输出因子得分情况,与前面fac2$scores输出的结果一致
+plot(fac4$loadings,xlab="Factor1",ylab="Factor2")  #输出因子载荷图,与前面fac2输出的结果一致
+biplot(fac4$scores,fac4$loadings)  #画出各个学生的因子得分图和原坐标在因子的方向,与前面fac2输出的结果一致
+```
+
+```{r}
+# m =3
+```
+
+```{r}
+#下面用主成分法做因子分析,采用了《多元统计分析及R语言建模》（王斌会编著，暨南大学出版社，2011年）
+library(mvstats) #加载mvstats包
+fac_3=factpc(x,3)#主成分法做因子分析
+fac_3
+fac5=factpc(x,3,rotation="varimax")  #用主成分法采用方差最大化作因子正交旋转
+fac5
+fac6=factpc(x,3,rotation="varimax",scores="regression")  #利用回归估计计算因子得分
+fac6$scores #输出因子得分情况
+plot(fac6$loadings,xlab="Factor1",ylab="Factor2")  #输出因子载荷图
+biplot(fac6$scores,fac6$loadings)  #画出各个学生的因子得分图和原坐标在因子的方向，全面反映了因子与原始数据的关系
+```
+
+
+```{r}
+#下面采用psych包中的fa函数和principal函数做因子分析,需要先安装psych包和GPArotation包
+library(psych) #加载psych包
+fa(x,nfactors=3,fm="ml",rotate="none") #利用psych包中的fa函数利用极大似然法做因子分析
+fac7=principal(x,3,rotate="none") #利用psych包中的principal函数利用主成分法做因子分析
+fac7
+library(GPArotation) #加载GPArotation包
+fac8=principal(x,3,rotate="varimax") #用主成分法采用方差最大化作因子正交旋转
+fac8
+fac8$scores #输出因子得分情况,与前面fac2$scores输出的结果一致
+plot(fac8$loadings,xlab="Factor1",ylab="Factor2")  #输出因子载荷图,与前面fac2输出的结果一致
+biplot(fac8$scores,fac8$loadings)  #画出各个学生的因子得分图和原坐标在因子的方向,与前面fac2输出的结果一致

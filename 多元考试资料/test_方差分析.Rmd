@@ -1,0 +1,56 @@
+---
+title: "test_1"
+author: "Auzzer_Pang"
+date: "6/11/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(multcomp)
+attach(cholesterol)
+table(trt)
+aggregate(response, by=list(trt), FUN=mean)#各组均值
+aggregate(response, by=list(trt), FUN=sd)  #各组标准差
+fit = aov(response ~ trt)
+summary(fit)#检验组建差异
+#理应需要绘图，但此处省略
+```
+
+
+```{r}
+#虽然ANOVA对各疗法的F检验表明五种药物疗法效果不同，但是并没有告诉你哪种疗法与其 他疗法不同。多重比较可以解决这个问题。
+TukeyHSD(fit)
+
+
+
+
+
+
+```
+
+```{r}
+#multcomp包中的glht()函数提供了多重均值比较更为全面的方法，既适用于线性模型(如 本章各例)，也适用于广义线性模型(见第13章)。下面的代码重现了Tukey HSD检验，并用一个 不同的图形对结果进行展示
+library(multcomp)
+par(mar=c(5,4,6,2))
+tuk = glht(fit,linfct = mcp(trt = "Tukey")) 
+plot(cld(tuk,level = .05),col = "lightgrey")
+
+
+```
+
+```{r}
+
+
+
+```
+
+
+```{r}
+
+
+
+```

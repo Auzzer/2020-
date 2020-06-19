@@ -1,0 +1,147 @@
+---
+title: "作图模版"
+author: "Auzzer_Pang"
+date: "6/18/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#生成随机数
+y1 = rnorm (20,mean = 1 , sd = 1 )
+y2 = rnorm (20,mean = 0 , sd = 1)
+```
+
+```{r}
+#x轴长度
+x = c(1:20);
+plot ( x , y1 , type = "b" ,pch=15, lty=1, col="red",
+       xlim = c(1,20), ylim = c(-4,4))
+axis(1, at=x,las=1,tck = -0.01)
+lines ( x , y2 , type = "b" , pch=17, lty=2, col="blue")
+```
+
+```{r}
+par(family='STKaiti')
+#一种点线图的模板
+##此处以随机数为例
+y1 = rnorm (20,mean = 1 , sd = 1 )
+y2 = rnorm (20,mean = 0 , sd = 1)
+##以plot函数绘图
+x = c(1:20);
+par(mgp = c(1,0.5,0))#表示标题在第二行，刻度表潜在0.5行，刻度线在0行
+plot ( x , y1 ,main = "主标题为", sub = "副标题为",
+       type = "b",
+       pch=15,
+       lty=1,
+       col="red",#线条颜色
+       xlim = c(1,20),#x轴范围
+       ylim = c(-5,5),
+       tck = 0.03#为正时刻度朝里
+)
+#添加次要刻度线(此处为y=0)
+abline(h=0, lty=2, col="green")
+#坐标轴控制
+axis(1, at=x,las=1,tck = -0.01)
+#添加另一条线
+lines ( x , y2 , type = "b" , pch=17, lty=2, col="blue")
+#添加图例
+legend("bottomleft", inset=.05, title="aqa", c("y1","y2"),
+lty=c(1, 2), pch=c(15, 17), col=c("red", "blue"))
+
+```
+```{r}
+set.seed(1234)
+y1=c(rnorm(20))
+y2=c(rnorm(20))
+x=c(1:20)
+opar <- par(no.readonly=TRUE) 
+par(lty=3)
+par(pin=c(5,3))
+par(oma=c(0,0,0,0))
+par(mar=c(5,4,4,2))
+plot(x,y1,
+     xlim=c(0,20),ylim=c(-3,3),
+     pch=15,type ="b",col="black",
+     xlab="x",ylab="y",main=expression(y%~%N(0,1)),
+     xaxt='n'#禁用x轴刻度线
+     )
+lines(x,y2,type="b",pch=0,col="red")
+legend("bottomleft", inset=0.01,c("group1", "group2"), 
+       col=c("black", "red"), lty = 2,pch=c(15,0),bty='n')
+axis(side=1,at=x,labels =1:20,gap.axis=0.25)
+```
+
+```{r}
+par(family='STKaiti')
+#一页多图
+library(vcd)
+opar <- par(no.readonly=TRUE) 
+layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
+d=density(mtcars$mpg)
+plot(d,main="核密度曲线图")
+text(x=42.3,y=0.068,labels='a',cex=1.5)
+plot(mtcars$mpg,type="b",main="散点图")
+text(x=32.5,y=34,labels='b',cex=1.5)
+boxplot(mtcars$mpg,main="箱线图",ylab="Miles per Gallon")
+text(x=1.51,y=34,labels='c',cex=1.5)
+
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+par(mfrow=c(2,3))
+par(xpd=T)
+par(bty="n")
+par(pin=c(4,2.5))
+par(mar=c(6,2,1,2))
+xy=par("usr")
+xy
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+plot(x,y1,xlim = c(0,20),ylim = c(-3,3),pch = 17,type = "b",
+     col = "#900021",xlab = "x",ylab = "y")
+lines(x,y2,type="b",pch=16,col="#002FA7")
+
+plot(x,y1,xlim=c(0,20),ylim=c(-3,3),pch=17,
+     type = "b",col="#900021",
+     xlab="x",ylab="y")
+lines(x,y2,type="b",pch=16,col="#002FA7")
+
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+plot(x,y1,xlim=c(0,20),ylim=c(-3,3),pch=17,type = "b",col="#900021",xlab="x",ylab="y")
+lines(x,y2,type="b",pch=16,col="#002FA7")
+
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+plot(x,y1,xlim=c(0,20),ylim=c(-3,3),pch=17,
+     type = "b",col="#900021",
+     xlab="x",ylab="y")
+lines(x,y2,type="b",pch=16,col="#002FA7")
+
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+plot(x,y1,xlim=c(0,20),ylim=c(-3,3),pch=17,
+     type = "b",col="#900021",xlab="x",ylab="y")
+lines(x,y2,type="b",pch=16,col="#002FA7")
+
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+legend(x=xy[2]-xinch(1.5),y=xy[3]-yinch(0.35),
+       legend=c("group1", "group2"),
+       ncol=2,bty="n",
+       col=c("#900021","#002FA7"), 
+       lty=1,lwd=2,xpd=T,pch=c(17,16))
+
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++#
+
+plot(x,y1,xlim=c(0,20),ylim=c(-3,3),
+     pch=17,type = "b",col="#900021",
+     xlab="x",ylab="y")
+lines(x,y2,type="b",pch=16,col="#002FA7")
+
+
+
+```
